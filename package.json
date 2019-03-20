@@ -1,0 +1,55 @@
+{
+  "name": "biohazard-alert",
+  "version": "1.0.0",
+  "description": "Probot app to deliver notifications of toxic comments",
+  "author": "Lee Dohm <atom@github.com> (https://github.com/atom/biohazard-alert)",
+  "license": "MIT",
+  "repository": "https://github.com//biohazard-alert.git",
+  "homepage": "https://github.com//biohazard-alert",
+  "bugs": "https://github.com//biohazard-alert/issues",
+  "keywords": [
+    "probot",
+    "github",
+    "probot-app"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "nodemon --exec \"npm start\"",
+    "start": "probot run ./lib/index.ts",
+    "lint": "standard **/*.ts --fix",
+    "test": "jest && standard **/*.ts",
+    "test:watch": "jest --watch --notify --notifyMode=change --coverage"
+  },
+  "dependencies": {
+    "nock": "^10.0.0",
+    "@types/nock": "^9.3.0",
+    "probot": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.0",
+    "@types/node": "^11.9.0",
+    "eslint-plugin-typescript": "^0.14.0",
+    "jest": "^24.0.0",
+    "nodemon": "^1.17.2",
+    "smee-client": "^1.0.2",
+    "standard": "^12.0.1",
+    "ts-jest": "^24.0.0",
+    "typescript": "^3.3.1",
+    "typescript-eslint-parser": "^22.0.0"
+  },
+  "engines": {
+    "node": ">= 8.3.0"
+  },
+  "standard": {
+    "parser": "typescript-eslint-parser",
+    "env": [
+      "jest"
+    ],
+    "plugins": [
+      "typescript"
+    ]
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}
