@@ -15,15 +15,19 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "nodemon --exec \"npm start\"",
-    "start": "probot run ./lib/index.ts",
+    "start": "probot run ./lib/index.js",
     "lint": "standard **/*.ts --fix",
     "test": "jest && standard **/*.ts",
     "test:watch": "jest --watch --notify --notifyMode=change --coverage"
   },
   "dependencies": {
-    "nock": "^10.0.0",
     "@types/nock": "^9.3.0",
-    "probot": "^7.2.0"
+    "@types/request": "^2.48.1",
+    "@types/request-promise-native": "^1.0.15",
+    "nock": "^10.0.0",
+    "probot": "^7.2.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7"
   },
   "devDependencies": {
     "@types/jest": "^24.0.0",
