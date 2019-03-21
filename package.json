@@ -25,6 +25,7 @@
     "commonmark": "^0.28.1",
     "nock": "^10.0.0",
     "probot": "^7.2.0",
+    "probot-config": "^1.0.1",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
     "strip-indent": "^2.0.0"

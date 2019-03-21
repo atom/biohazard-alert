@@ -3,6 +3,14 @@ import { Context, Logger } from 'probot'
 import Analyzer from './analyzer'
 import Notifier from './notifier'
 
+interface Config {
+  skipPrivateRepos: boolean
+}
+
+type GetConfig = (context: Context, filename: string, defaults: object) => Config
+
+const getConfig = require('probot-config') as GetConfig
+
 export default class Handler {
   private analyzer: Analyzer
 
@@ -17,6 +25,7 @@ export default class Handler {
   }
 
   async handle(context: Context) {
+    const config = await getConfig(context, 'biohazard-alert.yml', {skipPrivateRepos: false})
     const source = context.payload.comment.html_url
 
     // Don't process deleted comments
@@ -27,7 +36,7 @@ export default class Handler {
     }
 
     // Don't process comments in private repositories
-    if (context.payload.repository.private) {
+    if (context.payload.repository.private && config.skipPrivateRepos) {
       this.log.info(`Skipping comment in private repository ${source}`)
 
       return
