@@ -1,10 +1,10 @@
 import { Application } from 'probot' // eslint-disable-line no-unused-vars
 
+import Analyzer from './analyzer'
 import Notifier from './notifier'
-import SentimentAnalyzer from './sentiment-analyzer'
 
 export = (app: Application) => {
-  const analyzer = new SentimentAnalyzer(app.log)
+  const analyzer = new Analyzer(app.log)
   const notifier = new Notifier(app.log)
 
   app.log.debug('Install issue_comment handler')

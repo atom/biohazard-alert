@@ -1,7 +1,7 @@
 import { Logger } from 'probot'
 import * as request from 'request-promise-native'
 
-export default class SentimentAnalyzer {
+export default class Analyzer {
   private apiUrl: string
   private log: Logger
 
