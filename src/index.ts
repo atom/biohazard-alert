@@ -10,33 +10,38 @@ export = (app: Application) => {
   app.log.debug('Install issue_comment handler')
 
   app.on('issue_comment', async (context) => {
+    const source = context.payload.comment.html_url
+
     // Don't process deleted comments
     if (context.payload.action === 'deleted') {
+      app.log.info(`Skipping deleted comment ${source}`)
+
       return
     }
 
     // Don't process comments in private repositories
     if (context.payload.repository.private) {
+      app.log.info(`Skipping comment in private repository ${source}`)
+
       return
     }
 
-    const commentUrl = context.payload.comment.html_url
-    const commentText = context.payload.comment.body
+    const content = context.payload.comment.body
 
     let score = 0
 
     try {
-      score = await analyzer.analyze(commentUrl, commentText)
+      score = await analyzer.analyze(source, content)
     } catch (e) {
-      notifier.notifyError(commentUrl, commentText, e.error.error.message, e.message)
+      notifier.notifyError(source, content, e.error.error.message, e.message)
 
       throw e
     }
 
-    app.log.info(`Toxicity score ${score} for ${commentUrl}`)
+    app.log.info(`Toxicity score ${score} for ${source}`)
 
     if (score > 0.8) {
-      notifier.notify(commentUrl, commentText, score)
+      notifier.notify(source, content, score)
     }
   })
 }
