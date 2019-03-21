@@ -4,6 +4,9 @@ import Notifier from './notifier'
 import SentimentAnalyzer from './sentiment-analyzer'
 
 export = (app: Application) => {
+  const analyzer = new SentimentAnalyzer(app.log)
+  const notifier = new Notifier(app.log)
+
   app.log.debug('Install issue_comment handler')
 
   app.on('issue_comment', async (context) => {
@@ -16,9 +19,6 @@ export = (app: Application) => {
     if (context.payload.repository.private) {
       return
     }
-
-    const analyzer = new SentimentAnalyzer(app.log)
-    const notifier = new Notifier(app.log)
 
     const commentUrl = context.payload.comment.html_url
     const commentText = context.payload.comment.body
