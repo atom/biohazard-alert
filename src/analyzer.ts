@@ -19,7 +19,6 @@ export default class Analyzer {
         comment: {
           text: content
         },
-        languages: ['en'],
         requestedAttributes: {
           TOXICITY: {}
         }
