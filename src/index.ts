@@ -22,7 +22,16 @@ export = (app: Application) => {
 
     const commentUrl = context.payload.comment.html_url
     const commentText = context.payload.comment.body
-    const score = await analyzer.analyze(commentUrl, commentText)
+
+    let score = 0
+
+    try {
+      score = await analyzer.analyze(commentUrl, commentText)
+    } catch (e) {
+      notifier.notifyError(commentUrl, commentText, e.error.error.message, e.message)
+
+      throw e
+    }
 
     app.log.info(`Toxicity score ${score} for ${commentUrl}`)
 
