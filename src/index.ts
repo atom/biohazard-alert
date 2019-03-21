@@ -7,6 +7,16 @@ export = (app: Application) => {
   app.log.debug('Install issue_comment handler')
 
   app.on('issue_comment', async (context) => {
+    // Don't process deleted comments
+    if (context.payload.action === 'deleted') {
+      return
+    }
+
+    // Don't process comments in private repositories
+    if (context.payload.repository.private) {
+      return
+    }
+
     const analyzer = new SentimentAnalyzer(app.log)
     const notifier = new Notifier(app.log)
 
