@@ -5,11 +5,17 @@ import Notifier from './notifier'
 
 interface Config {
   skipPrivateRepos: boolean
+  toxicityThreshold: number
 }
 
-type GetConfig = (context: Context, filename: string, defaults: object) => Config
+type GetConfig = (context: Context, filename: string, defaults: Config) => Config
 
 const getConfig = require('probot-config') as GetConfig
+
+const defaults = {
+  skipPrivateRepos: true,
+  toxicityThreshold: 0.8
+}
 
 export default class Handler {
   private analyzer: Analyzer
@@ -25,7 +31,7 @@ export default class Handler {
   }
 
   async handle(context: Context): Promise<void> {
-    const config = await getConfig(context, 'biohazard-alert.yml', {skipPrivateRepos: true})
+    const config = await getConfig(context, 'biohazard-alert.yml', defaults)
     const source = context.payload.comment.html_url
 
     // Don't process deleted comments
@@ -56,7 +62,7 @@ export default class Handler {
 
     this.log.info(`Toxicity score ${score} for ${source}`)
 
-    if (score > 0.8) {
+    if (score > config.toxicityThreshold) {
       this.notifier.notify(source, content, score)
     }
   }
