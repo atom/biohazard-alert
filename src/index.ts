@@ -8,6 +8,6 @@ export = (app: Application) => {
   app.log.debug('Install issue_comment handler')
 
   app.on('issue_comment', async (context) => {
-    handler.handle(context)
+    await handler.handle(context)
   })
 }

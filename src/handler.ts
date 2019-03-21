@@ -24,8 +24,8 @@ export default class Handler {
     this.notifier = new Notifier(logger)
   }
 
-  async handle(context: Context) {
-    const config = await getConfig(context, 'biohazard-alert.yml', {skipPrivateRepos: false})
+  async handle(context: Context): Promise<void> {
+    const config = await getConfig(context, 'biohazard-alert.yml', {skipPrivateRepos: true})
     const source = context.payload.comment.html_url
 
     // Don't process deleted comments

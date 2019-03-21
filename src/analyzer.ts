@@ -3,6 +3,12 @@ import * as request from 'request-promise-native'
 
 import InvalidEnvironmentError from './invalid-environment-error'
 
+/**
+ * Analyzes text for toxicity and other attributes.
+ *
+ * Requires the `PERSPECTIVE_KEY` environment variable to be set with a Google API key that has
+ * access to the Perspective API.
+ */
 export default class Analyzer {
   private apiUrl: string
   private log: Logger
@@ -18,7 +24,7 @@ export default class Analyzer {
     this.log = logger
   }
 
-  async analyze(sourceUrl: string, content: string): Promise<number> {
+  async analyze(source: string, content: string): Promise<number> {
     const apiRequest = {
       url: this.apiUrl,
       body: {
@@ -32,9 +38,9 @@ export default class Analyzer {
       json: true
     }
 
-    this.log.debug(`Call Perspective API on ${sourceUrl}`)
+    this.log.debug(`Call Perspective API on ${source}`)
     const response = await (request.post(apiRequest) as any)
-    this.log.debug(response, `Perspective API response for ${sourceUrl}`)
+    this.log.debug(response, `Perspective API response for ${source}`)
 
     return response.attributeScores.TOXICITY.summaryScore.value
   }
