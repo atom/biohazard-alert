@@ -5,6 +5,15 @@ import stripIndent from 'strip-indent'
 
 import InvalidEnvironmentError from './invalid-environment-error'
 
+/**
+ * Sends notifications via Sendgrid to the configured email addresses.
+ *
+ * Requires the following environment variables to be set:
+ *
+ * * `FROM_EMAIL` -- Email address notifications will be sent from
+ * * `NOTIFICATION_EMAIL` -- Email address notifications will be sent to
+ * * `SENDGRID_KEY` -- API key for Sendgrid
+ */
 export default class Notifier {
   /** Email address notifications will be sent from */
   private fromEmail: string
@@ -15,13 +24,13 @@ export default class Notifier {
   /** Probot logger */
   private log: Logger
 
-  /** Commonmark reader used to render Markdown */
+  /** CommonMark reader used to parse Markdown */
   private reader: CommonMark.Parser
 
   /** Email address notifications will be sent to */
   private toEmail: string
 
-  /** Commonmark writer used to render Markdown */
+  /** CommonMark writer used to render parsed Markdown into HTML */
   private writer: CommonMark.HtmlRenderer
 
   constructor(logger: Logger) {
@@ -47,6 +56,9 @@ export default class Notifier {
     mailer.setApiKey(this.key)
   }
 
+  /**
+   * Sends a notification of the `score` ascribed to `info` to the notification email address.
+   */
   async notify(info: EventInfo, score: number): Promise<void> {
     this.log.debug(info, `Notify subscribers of score ${score} on ${info.source}`)
 
@@ -66,6 +78,10 @@ export default class Notifier {
     await this.sendMail(text)
   }
 
+  /**
+   * Sends a notification of an `error` that occurred analyzing the event in `info` to the
+   * notification email address.
+   */
   async notifyError(info: EventInfo, error: string, fullError: string): Promise<void> {
     this.log.debug(info, `Notify subscribers of error on ${info.source}`)
 

@@ -10,7 +10,10 @@ import InvalidEnvironmentError from './invalid-environment-error'
  * access to the Perspective API.
  */
 export default class Analyzer {
+  /** Perspective API URL */
   private apiUrl: string
+
+  /** Probot logger */
   private log: Logger
 
   constructor(logger: Logger) {
@@ -24,6 +27,9 @@ export default class Analyzer {
     this.log = logger
   }
 
+  /**
+   * Analyzes the event in `info` and returns a toxicity value in the range `[0,1]`.
+   */
   async analyze(info: EventInfo): Promise<number> {
     const apiRequest = {
       url: this.apiUrl,

@@ -17,11 +17,17 @@ const defaults = {
   toxicityThreshold: 0.8
 }
 
+/**
+ * Handles events received by Probot.
+ */
 export default class Handler {
+  /** Used to analyze events */
   private analyzer: Analyzer
 
+  /** Probot logger */
   private log: Logger
 
+  /** Used to send notifications of analysis */
   private notifier: Notifier
 
   constructor(logger: Logger) {
@@ -30,6 +36,9 @@ export default class Handler {
     this.notifier = new Notifier(logger)
   }
 
+  /**
+   * Handles an event described by `context`.
+   */
   async handle(context: Context): Promise<void> {
     const config = await getConfig(context, 'biohazard-alert.yml', defaults)
     const info = this.parseContext(context)
