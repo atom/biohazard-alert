@@ -17,6 +17,13 @@ const defaults = {
   toxicityThreshold: 0.8
 }
 
+interface HandlerInfo {
+  content: string
+  event: string
+  isRepoPrivate: boolean
+  source: string
+}
+
 export default class Handler {
   private analyzer: Analyzer
 
@@ -32,38 +39,55 @@ export default class Handler {
 
   async handle(context: Context): Promise<void> {
     const config = await getConfig(context, 'biohazard-alert.yml', defaults)
-    const source = context.payload.comment.html_url
+    const info = this.parseContext(context)
 
-    // Don't process deleted comments
-    if (context.payload.action === 'deleted') {
-      this.log.info(`Skipping deleted comment ${source}`)
-
+    // Don't process events that we don't know how to parse
+    if (!info) {
       return
     }
 
     // Don't process comments in private repositories
-    if (context.payload.repository.private && config.skipPrivateRepos) {
-      this.log.info(`Skipping comment in private repository ${source}`)
+    if (info.isRepoPrivate && config.skipPrivateRepos) {
+      this.log.info(`Skipping comment in private repository ${info.source}`)
 
       return
     }
 
-    const content = context.payload.comment.body
-
     let score = 0
 
     try {
-      score = await this.analyzer.analyze(source, content)
+      score = await this.analyzer.analyze(info.source, info.content)
     } catch (e) {
-      this.notifier.notifyError(source, content, e.error.error.message, e.message)
+      this.notifier.notifyError(info.source, info.content, e.error.error.message, e.message)
 
       throw e
     }
 
-    this.log.info(`Toxicity score ${score} for ${source}`)
+    this.log.info(`Toxicity score ${score} for ${info.source}`)
 
     if (score > config.toxicityThreshold) {
-      this.notifier.notify(source, content, score)
+      this.notifier.notify(info.source, info.content, score)
+    }
+  }
+
+  private parseContext(context: Context): HandlerInfo | null {
+    const fullEvent = `${context.event}.${context.payload.action}`
+
+    switch (fullEvent) {
+      case 'issue_comment.created':
+      case 'issue_comment.edited':
+        return {
+          event: context.event,
+          isRepoPrivate: context.payload.repository.private,
+          source: context.payload.comment.html_url,
+          content: context.payload.comment.body
+        }
+
+      default: {
+        this.log.info(`Skipping unhandleable event: ${fullEvent}`)
+
+        return null
+      }
     }
   }
 }
