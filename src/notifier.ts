@@ -109,7 +109,12 @@ export default class Notifier {
       from: this.fromEmail,
       subject: subject,
       text: text,
-      html: html
+      html: html,
+      tracking_settings: {
+        click_tracking: {
+          enable: false
+        }
+      }
     }
 
     this.log.info(`Send notification from ${this.fromEmail} to ${this.toEmail}`)
