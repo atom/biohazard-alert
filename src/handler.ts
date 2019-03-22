@@ -50,7 +50,7 @@ export default class Handler {
 
     // Don't process comments in private repositories
     if (info.isRepoPrivate && config.skipPrivateRepos) {
-      this.log.info(`Skipping comment in private repository ${info.source}`)
+      this.log.info(`Skipping event in private repository ${info.source}`)
 
       return
     }
@@ -76,16 +76,6 @@ export default class Handler {
     const fullEvent = `${context.event}.${context.payload.action}`
 
     switch (fullEvent) {
-      case 'commit_comment.created':
-        return {
-          author: context.payload.comment.user.login,
-          event: context.event,
-          fullEvent: fullEvent,
-          isRepoPrivate: context.payload.repository.private,
-          source: context.payload.comment.html_url,
-          content: context.payload.comment.body
-        }
-
       case 'issues.opened':
       case 'issues.edited':
         return {
@@ -97,6 +87,7 @@ export default class Handler {
           content: '# ' + context.payload.issue.title + "\n\n" + context.payload.issue.body
         }
 
+      case 'commit_comment.created':
       case 'issue_comment.created':
       case 'issue_comment.edited':
         return {
