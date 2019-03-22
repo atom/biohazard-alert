@@ -37,6 +37,7 @@ export default class Analyzer {
         comment: {
           text: info.content
         },
+        doNotStore: info.isRepoPrivate,
         requestedAttributes: {
           TOXICITY: {}
         }
