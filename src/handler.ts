@@ -94,7 +94,7 @@ export default class Handler {
           fullEvent: fullEvent,
           isRepoPrivate: context.payload.repository.private,
           source: context.payload.issue.html_url,
-          content: context.payload.issue.body
+          content: '# ' + context.payload.issue.title + "\n\n" + context.payload.issue.body
         }
 
       case 'issue_comment.created':
