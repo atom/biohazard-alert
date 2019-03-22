@@ -1,4 +1,4 @@
-import { HtmlRenderer, Parser} from 'commonmark'
+import * as CommonMark from 'commonmark'
 import { Logger } from 'probot'
 import mailer from '@sendgrid/mail'
 import stripIndent from 'strip-indent'
@@ -16,13 +16,13 @@ export default class Notifier {
   private log: Logger
 
   /** Commonmark reader used to render Markdown */
-  private reader: Parser
+  private reader: CommonMark.Parser
 
   /** Email address notifications will be sent to */
   private toEmail: string
 
   /** Commonmark writer used to render Markdown */
-  private writer: HtmlRenderer
+  private writer: CommonMark.HtmlRenderer
 
   constructor(logger: Logger) {
     if (!process.env.FROM_EMAIL) {
@@ -40,9 +40,9 @@ export default class Notifier {
     this.fromEmail = process.env.FROM_EMAIL
     this.key = process.env.SENDGRID_KEY
     this.log = logger
-    this.reader = new Parser()
+    this.reader = new CommonMark.Parser()
     this.toEmail = process.env.NOTIFICATION_EMAIL
-    this.writer = new HtmlRenderer({safe: true, smart: true})
+    this.writer = new CommonMark.HtmlRenderer({safe: true, smart: true})
 
     mailer.setApiKey(this.key)
   }
