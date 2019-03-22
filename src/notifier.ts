@@ -63,16 +63,16 @@ export default class Notifier {
     this.log.debug(info, `Notify subscribers of score ${score} on ${info.source}`)
 
     const text = `
-      ## Biohazard Alert
+## Biohazard Alert
 
-      ${this.sourceLink(info)} by ${this.authorLink(info)} was found
-      with a toxicity of ${score}. Please investigate!
+${this.sourceLink(info)} by ${this.authorLink(info)} was found
+with a toxicity of ${score}. Please investigate!
 
-      Original text follows:
+Original text follows:
 
-      -----
+-----
 
-      ${info.content}
+${info.content}
     `
 
     await this.sendMail(text)
@@ -86,22 +86,22 @@ export default class Notifier {
     this.log.debug(info, `Notify subscribers of error on ${info.source}`)
 
     const text = `
-      ## Biohazard Alert Analysis Error
+## Biohazard Alert Analysis Error
 
-      An error occurred when analyzing ${this.sourceLink(info)} by ${this.authorLink(info)}:
-      \`${error}\`
+An error occurred when analyzing ${this.sourceLink(info)} by ${this.authorLink(info)}:
+\`${error}\`
 
-      Full error and original text follows:
+Full error and original text follows:
 
-      -----
+-----
 
-      \`\`\`
-      ${fullError}
-      \`\`\`
+\`\`\`
+${fullError}
+\`\`\`
 
-      -----
+-----
 
-      ${info.content}
+${info.content}
     `
 
     await this.sendMail(text, 'Biohazard Alert: Error during analysis')
