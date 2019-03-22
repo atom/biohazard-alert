@@ -139,6 +139,9 @@ ${info.content}
 
   private sourceLink(info: EventInfo): string {
     switch (info.event) {
+      case 'commit_comment':
+        return `[A code comment](${info.source})`
+
       case 'issues':
         return `[An issue](${info.source})`
 
