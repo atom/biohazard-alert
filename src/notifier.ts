@@ -47,31 +47,33 @@ export default class Notifier {
     mailer.setApiKey(this.key)
   }
 
-  async notify(source: string, content: string, score: number): Promise<void> {
-    this.log.debug(`Notify subscribers of score ${score} on ${source}`)
+  async notify(info: EventInfo, score: number): Promise<void> {
+    this.log.debug(info, `Notify subscribers of score ${score} on ${info.source}`)
 
     const text = `
       ## Biohazard Alert
 
-      [A comment](${source}) was found with a toxicity of ${score}. Please investigate!
+      ${this.sourceLink(info)} by ${this.authorLink(info)} was found
+      with a toxicity of ${score}. Please investigate!
 
       Original text follows:
 
       -----
 
-      ${content}
+      ${info.content}
     `
 
     await this.sendMail(text)
   }
 
-  async notifyError(source: string, content: string, error: string, fullError: string): Promise<void> {
-    this.log.debug(`Notify subscribers of error on ${source}`)
+  async notifyError(info: EventInfo, error: string, fullError: string): Promise<void> {
+    this.log.debug(info, `Notify subscribers of error on ${info.source}`)
 
     const text = `
       ## Biohazard Alert Analysis Error
 
-      An error occurred when analyzing [a comment](${source}): \`${error}\`
+      An error occurred when analyzing ${this.sourceLink(info)} by ${this.authorLink(info)}:
+      \`${error}\`
 
       Full error and original text follows:
 
@@ -83,10 +85,14 @@ export default class Notifier {
 
       -----
 
-      ${content}
+      ${info.content}
     `
 
     await this.sendMail(text, 'Biohazard Alert: Error during analysis')
+  }
+
+  private authorLink(info: EventInfo): string {
+    return `[${info.author}](https://github.com/${info.author})`
   }
 
   private toHtml(text: string): string {
@@ -108,5 +114,18 @@ export default class Notifier {
 
     this.log.info(`Send notification from ${this.fromEmail} to ${this.toEmail}`)
     await mailer.send(msg)
+  }
+
+  private sourceLink(info: EventInfo): string {
+    switch (info.event) {
+      case 'issues':
+        return `[An issue](${info.source})`
+
+      case 'issue_comment':
+        return `[A comment](${info.source})`
+
+      default:
+        return info.source
+    }
   }
 }

@@ -17,13 +17,6 @@ const defaults = {
   toxicityThreshold: 0.8
 }
 
-interface HandlerInfo {
-  content: string
-  event: string
-  isRepoPrivate: boolean
-  source: string
-}
-
 export default class Handler {
   private analyzer: Analyzer
 
@@ -56,9 +49,9 @@ export default class Handler {
     let score = 0
 
     try {
-      score = await this.analyzer.analyze(info.source, info.content)
+      score = await this.analyzer.analyze(info)
     } catch (e) {
-      this.notifier.notifyError(info.source, info.content, e.error.error.message, e.message)
+      this.notifier.notifyError(info, e.error.error.message, e.message)
 
       throw e
     }
@@ -66,18 +59,31 @@ export default class Handler {
     this.log.info(`Toxicity score ${score} for ${info.source}`)
 
     if (score > config.toxicityThreshold) {
-      this.notifier.notify(info.source, info.content, score)
+      this.notifier.notify(info, score)
     }
   }
 
-  private parseContext(context: Context): HandlerInfo | null {
+  private parseContext(context: Context): EventInfo | null {
     const fullEvent = `${context.event}.${context.payload.action}`
 
     switch (fullEvent) {
+      case 'issues.opened':
+      case 'issues.edited':
+        return {
+          author: context.payload.issue.user.login,
+          event: context.event,
+          fullEvent: fullEvent,
+          isRepoPrivate: context.payload.repository.private,
+          source: context.payload.issue.html_url,
+          content: context.payload.issue.body
+        }
+
       case 'issue_comment.created':
       case 'issue_comment.edited':
         return {
+          author: context.payload.comment.user.login,
           event: context.event,
+          fullEvent: fullEvent,
           isRepoPrivate: context.payload.repository.private,
           source: context.payload.comment.html_url,
           content: context.payload.comment.body

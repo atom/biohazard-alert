@@ -24,12 +24,12 @@ export default class Analyzer {
     this.log = logger
   }
 
-  async analyze(source: string, content: string): Promise<number> {
+  async analyze(info: EventInfo): Promise<number> {
     const apiRequest = {
       url: this.apiUrl,
       body: {
         comment: {
-          text: content
+          text: info.content
         },
         requestedAttributes: {
           TOXICITY: {}
@@ -38,9 +38,9 @@ export default class Analyzer {
       json: true
     }
 
-    this.log.debug(`Call Perspective API on ${source}`)
+    this.log.debug(`Call Perspective API on ${info.source}`)
     const response = await (request.post(apiRequest) as any)
-    this.log.debug(response, `Perspective API response for ${source}`)
+    this.log.debug(response, `Perspective API response for ${info.source}`)
 
     return response.attributeScores.TOXICITY.summaryScore.value
   }
