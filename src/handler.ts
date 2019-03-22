@@ -76,6 +76,16 @@ export default class Handler {
     const fullEvent = `${context.event}.${context.payload.action}`
 
     switch (fullEvent) {
+      case 'commit_comment.created':
+        return {
+          author: context.payload.comment.user.login,
+          event: context.event,
+          fullEvent: fullEvent,
+          isRepoPrivate: context.payload.repository.private,
+          source: context.payload.comment.html_url,
+          content: context.payload.comment.body
+        }
+
       case 'issues.opened':
       case 'issues.edited':
         return {
