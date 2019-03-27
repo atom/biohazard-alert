@@ -44,7 +44,7 @@ export default class Handler {
     const info = this.parseContext(context)
 
     if (!info) {
-      this.log.info(`Skipping unhandleable event: ${fullEvent}`)
+      this.log.info(`Skipping unhandleable event: ${context.event}.${context.payload.action}`)
 
       return
     }
