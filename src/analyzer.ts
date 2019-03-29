@@ -63,10 +63,24 @@ export default class Analyzer {
     return Math.max(...scores)
   }
 
+  async getAnalysis(info: EventInfo): Promise<Perspective.Response[]> {
+    const chunks = this.split(info.content)
+
+    return Promise.all(chunks.map(async chunk => {
+      return this.getChunkAnalysis(info, chunk)
+    }))
+  }
+
   /**
    * Analyzes a chunk of the content and returns a toxicity value in the range `[0,1]`.
    */
   private async analyzeChunk(info: EventInfo, chunk: string): Promise<number> {
+    const response = await this.getChunkAnalysis(info, chunk)
+
+    return response.attributeScores.TOXICITY.summaryScore.value
+  }
+
+  private async getChunkAnalysis(info: EventInfo, chunk: string): Promise<Perspective.Response> {
     const apiRequest = {
       url: this.apiUrl,
       body: {
@@ -82,10 +96,10 @@ export default class Analyzer {
     }
 
     this.log.debug(request, `Call Perspective API on ${info.source}`)
-    const response = await (request.post(apiRequest) as any)
+    const response = await (request.post(apiRequest) as unknown as Perspective.Response)
     this.log.debug(response, `Perspective API response for ${info.source}`)
 
-    return response.attributeScores.TOXICITY.summaryScore.value
+    return response
   }
 
   /**
