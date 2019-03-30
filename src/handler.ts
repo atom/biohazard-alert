@@ -1,4 +1,4 @@
-import { Context, Logger } from 'probot'
+import { Context, Logger } from 'probot' // eslint-disable-line no-unused-vars
 
 import Analyzer from './analyzer'
 import Notifier from './notifier'
@@ -30,7 +30,7 @@ export default class Handler {
   /** Used to send notifications of analysis */
   private notifier: Notifier
 
-  constructor(logger: Logger) {
+  constructor (logger: Logger) {
     this.analyzer = new Analyzer(logger)
     this.log = logger
     this.notifier = new Notifier(logger)
@@ -39,7 +39,7 @@ export default class Handler {
   /**
    * Handles an event described by `context`.
    */
-  async handle(context: Context): Promise<void> {
+  async handle (context: Context): Promise<void> {
     const config = await getConfig(context, 'biohazard-alert.yml', defaults)
     const info = this.parseContext(context)
 
@@ -78,7 +78,7 @@ export default class Handler {
     }
   }
 
-  private parseContext(context: Context): EventInfo | null {
+  private parseContext (context: Context): EventInfo | null {
     const fullEvent = `${context.event}.${context.payload.action}`
 
     switch (fullEvent) {
@@ -91,7 +91,7 @@ export default class Handler {
           isBot: context.isBot,
           isRepoPrivate: context.payload.repository.private,
           source: context.payload.issue.html_url,
-          content: '# ' + context.payload.issue.title + "\n\n" + context.payload.issue.body
+          content: '# ' + context.payload.issue.title + '\n\n' + context.payload.issue.body
         }
 
       case 'commit_comment.created':
