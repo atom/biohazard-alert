@@ -12,6 +12,9 @@
     "github",
     "probot-app"
   ],
+  "bin": {
+    "biohazard-alert": "lib/biohazard-alert.js"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "nodemon --exec \"npm start\"",

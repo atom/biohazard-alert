@@ -1,19 +1,45 @@
-import Analyzer from './analyzer'
 import Octokit from '@octokit/rest'
+
+import Analyzer from './analyzer'
 
 type IssueOrComment = Octokit.IssuesGetResponse | Octokit.IssuesGetCommentResponse
 type Repo = Octokit.ReposGetResponse
 type User = Octokit.IssuesGetResponseUser | Octokit.IssuesGetCommentResponseUser
 
+const logger = {
+  debug: () => {},
+  info: () => {}
+}
+
+/**
+ * Command-line interface for the analysis API.
+ */
 export default class Cli {
+  /** Access to the analysis API */
+  private analyzer: Analyzer
+
+  /** Access to the GitHub API */
   private octokit: Octokit
 
   constructor() {
     this.octokit = new Octokit()
+    this.analyzer = new Analyzer(logger)
   }
 
+  /**
+   * Execute the command according to the arguments passed on the command line.
+   */
   async run() {
-    const [options, info] = await this.parseArguments()
+    try {
+      const [options, info] = await this.parseArguments()
+
+      const analysis = await this.analyzer.getAnalysis(info)
+      analysis.forEach(report => {
+        console.log(JSON.stringify(report, null, 2))
+      })
+    } catch(e) {
+      console.error(e)
+    }
   }
 
   private action(item: IssueOrComment): string {
@@ -41,7 +67,7 @@ export default class Cli {
   }
 
   private async parseArguments(): Promise<[object, EventInfo]> {
-    const options = require('yargs')
+    const options = require('yargs').argv
     const info = await this.parseUri(options._)
 
     return [options, info]
