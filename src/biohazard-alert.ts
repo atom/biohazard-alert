@@ -6,9 +6,9 @@
  * See cli.ts for details.
  */
 
-require('dotenv').config()
-
 import Cli from './cli'
+
+require('dotenv').config()
 
 const cli = new Cli()
 cli.run()

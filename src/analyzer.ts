@@ -1,4 +1,4 @@
-import { Logger } from 'probot'
+import { Logger } from 'probot' // eslint-disable-line no-unused-vars
 import * as request from 'request-promise-native'
 
 import InvalidEnvironmentError from './invalid-environment-error'
@@ -25,7 +25,7 @@ export default class Analyzer {
   /** Amount of content to slice off that is less than the length of a chunk so they overlap */
   private sliceLength: number
 
-  constructor(logger: Logger, maxLength = 3000) {
+  constructor (logger: Logger, maxLength = 3000) {
     if (!process.env.PERSPECTIVE_KEY) {
       throw new InvalidEnvironmentError('PERSPECTIVE_KEY')
     }
@@ -52,7 +52,7 @@ export default class Analyzer {
    * 2. Each chunk is analyzed separately
    * 3. The highest score for a chunk is returned as the score for the event
    */
-  async analyze(info: EventInfo): Promise<number> {
+  async analyze (info: EventInfo): Promise<number> {
     const chunks = this.split(info.content)
     const scores = await Promise.all(chunks.map(async chunk => {
       return this.analyzeChunk(info, chunk)
@@ -63,7 +63,10 @@ export default class Analyzer {
     return Math.max(...scores)
   }
 
-  async getAnalysis(info: EventInfo): Promise<Perspective.Response[]> {
+  /**
+   * Gets the raw analysis from the Perspective API.
+   */
+  async getAnalysis (info: EventInfo): Promise<Perspective.Response[]> {
     const chunks = this.split(info.content)
 
     return Promise.all(chunks.map(async chunk => {
@@ -74,13 +77,16 @@ export default class Analyzer {
   /**
    * Analyzes a chunk of the content and returns a toxicity value in the range `[0,1]`.
    */
-  private async analyzeChunk(info: EventInfo, chunk: string): Promise<number> {
+  private async analyzeChunk (info: EventInfo, chunk: string): Promise<number> {
     const response = await this.getChunkAnalysis(info, chunk)
 
     return response.attributeScores.TOXICITY.summaryScore.value
   }
 
-  private async getChunkAnalysis(info: EventInfo, chunk: string): Promise<Perspective.Response> {
+  /**
+   * Gets the raw analysis of a chunk of content.
+   */
+  private async getChunkAnalysis (info: EventInfo, chunk: string): Promise<Perspective.Response> {
     const apiRequest = {
       url: this.apiUrl,
       body: {
@@ -105,7 +111,7 @@ export default class Analyzer {
   /**
    * Splits `content` into an array of strings each short enough to be processed by the API.
    */
-  private split(content: string): string[] {
+  private split (content: string): string[] {
     let chunks: string[] = []
 
     while (content.length > this.maxLength) {

@@ -1,6 +1,9 @@
-namespace Perspective {
+/**
+ * Types for Google's Perspective API.
+ */
+namespace Perspective { // eslint-disable-line no-unused-vars
   interface Attribute {
-    scoreType?: "PROBABILITY"
+    scoreType?: 'PROBABILITY'
     scoreThreshold?: number
   }
 
@@ -15,7 +18,7 @@ namespace Perspective {
 
   interface Comment {
     text: string
-    type?: "HTML" | "PLAIN_TEXT"
+    type?: 'HTML' | 'PLAIN_TEXT'
   }
 
   interface Score {
@@ -29,6 +32,11 @@ namespace Perspective {
     score: Score
   }
 
+  /**
+   * Format of the Perspective API request.
+   *
+   * See: https://github.com/conversationai/perspectiveapi/blob/master/api_reference.md#analyzecomment-request
+   */
   export interface Request {
     comment: Comment
     requestedAttributes: AttributeMap
@@ -38,6 +46,11 @@ namespace Perspective {
     sessionId?: string
   }
 
+  /**
+   * Format of the Perspective API response.
+   *
+   * See: https://github.com/conversationai/perspectiveapi/blob/master/api_reference.md#analyzecomment-response
+   */
   export interface Response {
     attributeScores: AttributeScoreMap
     clientToken: string
