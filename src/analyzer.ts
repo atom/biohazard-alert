@@ -95,7 +95,15 @@ export default class Analyzer {
         },
         doNotStore: info.isRepoPrivate,
         requestedAttributes: {
-          TOXICITY: {}
+          TOXICITY: {},
+          SEVERE_TOXICITY: {},
+          IDENTITY_ATTACK: {},
+          INSULT: {},
+          PROFANITY: {},
+          THREAT: {},
+          SEXUALLY_EXPLICIT: {},
+          FLIRTATION: {},
+          UNSUBSTANTIAL: {}
         }
       },
       json: true
