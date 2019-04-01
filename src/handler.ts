@@ -114,8 +114,6 @@ export default class Handler {
         }
 
       case 'commit_comment.created':
-      case 'issue_comment.created':
-      case 'issue_comment.edited':
         return {
           author: context.payload.comment.user.login,
           event: context.event,
@@ -126,9 +124,28 @@ export default class Handler {
           content: context.payload.comment.body
         }
 
+      case 'issue_comment.created':
+      case 'issue_comment.edited':
+        return {
+          author: context.payload.comment.user.login,
+          event: context.event,
+          fullEvent: fullEvent,
+          isBot: context.isBot,
+          isRepoPrivate: context.payload.repository.private,
+          source: context.payload.comment.html_url,
+          content: this.stripEmailReply(context.payload.comment.body)
+        }
+
       default: {
         return null
       }
     }
+  }
+
+  private stripEmailReply (content: string): string {
+    const replyBlockPattern = /(^>.*$\n?)+/m
+    const match = replyBlockPattern.exec(content)
+
+    return match ? content.slice(0, match.index) : content
   }
 }

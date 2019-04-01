@@ -56,6 +56,8 @@ export default class Analyzer {
    * 3. The highest score for a chunk is returned as the score for the event
    */
   async analyze (info: EventInfo): Promise<Scores> {
+    this.log.debug(info, 'Analyze event')
+
     const responses = await this.getAnalysis(info)
     const allScores = this.extractScores(responses)
 
