@@ -5,16 +5,17 @@ import Notifier from './notifier'
 
 interface Config {
   skipPrivateRepos: boolean
-  toxicityThreshold: number
+  threshold: number
 }
 
 type GetConfig = (context: Context, filename: string, defaults: Config) => Config
+type Scores = {[s: string]: number}
 
 const getConfig = require('probot-config') as GetConfig
 
 const defaults = {
   skipPrivateRepos: true,
-  toxicityThreshold: 0.8
+  threshold: 0.8
 }
 
 /**
@@ -61,21 +62,39 @@ export default class Handler {
       return
     }
 
-    let score = 0
+    let scores
 
     try {
-      score = await this.analyzer.analyze(info)
+      scores = await this.analyzer.analyze(info)
     } catch (e) {
       this.notifier.notifyError(info, e.error.error.message, e.message)
 
       throw e
     }
 
-    this.log.info(`Toxicity score ${score} for ${info.source}`)
-
-    if (score > config.toxicityThreshold) {
-      this.notifier.notify(info, score)
+    for (let attr in scores) {
+      this.log.info(`Model ${attr} score ${scores[attr]} for ${info.source}`)
     }
+
+    const thresholdScores = this.isOverThreshold(scores, config.threshold)
+
+    if (thresholdScores) {
+      this.notifier.notify(info, thresholdScores)
+    }
+  }
+
+  private isOverThreshold (scores: Scores, threshold: number): Scores | null {
+    let thresholdScores: Scores = {}
+    let crossedThreshold = false
+
+    for (let attr in scores) {
+      if (scores[attr] >= threshold) {
+        thresholdScores[attr] = scores[attr]
+        crossedThreshold = true
+      }
+    }
+
+    return crossedThreshold ? thresholdScores : null
   }
 
   private parseContext (context: Context): EventInfo | null {

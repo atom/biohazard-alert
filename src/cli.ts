@@ -2,9 +2,15 @@ import Octokit from '@octokit/rest'
 
 import Analyzer from './analyzer'
 
+interface Options {
+  verbose: boolean
+}
+
 type IssueOrComment = Octokit.IssuesGetResponse | Octokit.IssuesGetCommentResponse
 type Repo = Octokit.ReposGetResponse
 type User = Octokit.IssuesGetResponseUser | Octokit.IssuesGetCommentResponseUser
+
+type ScoreMap = {[s: string]: number}
 
 // Disable Probot logging
 const logger = {
@@ -32,11 +38,18 @@ export default class Cli {
    */
   async run () {
     try {
-      const [options, info] = await this.parseArguments() // eslint-disable-line no-unused-vars
+      const [options, info] = await this.parseArguments()
 
       const analysis = await this.analyzer.getAnalysis(info)
-      analysis.forEach(report => {
-        console.log(JSON.stringify(report, null, 2))
+      analysis.forEach(response => {
+        if (options.verbose) {
+          console.log(JSON.stringify(response, null, 2))
+        } else {
+          const scores = this.getScores(response)
+
+          Object.keys(scores).sort().forEach(key => { console.log(`${key}: ${scores[key]}`) })
+          console.log('')
+        }
       })
     } catch (e) {
       console.error(e)
@@ -63,12 +76,30 @@ export default class Cli {
     return `${event}.${action}`
   }
 
+  private getScores (response: Perspective.Response): ScoreMap {
+    const attrScores = response.attributeScores
+    let scores: ScoreMap = {}
+
+    Object.keys(attrScores).forEach(key => {
+      scores[key] = attrScores[key].summaryScore.value
+    })
+
+    return scores
+  }
+
   private isBot (user: User): boolean {
     return user.type !== 'User'
   }
 
-  private async parseArguments (): Promise<[object, EventInfo]> {
-    const options = require('yargs').argv
+  private async parseArguments (): Promise<[Options, EventInfo]> {
+    const options =
+      require('yargs')
+        .usage('Usage: $0 [options] url')
+        .boolean('verbose')
+        .alias('v', 'verbose')
+        .describe('v', 'Write out the full API response')
+        .argv
+
     const info = await this.parseUri(options._)
 
     return [options, info]

@@ -5,6 +5,8 @@ import stripIndent from 'strip-indent'
 
 import InvalidEnvironmentError from './invalid-environment-error'
 
+type Scores = {[s: string]: number}
+
 /**
  * Sends notifications via Sendgrid to the configured email addresses.
  *
@@ -59,14 +61,16 @@ export default class Notifier {
   /**
    * Sends a notification of the `score` ascribed to `info` to the notification email address.
    */
-  async notify (info: EventInfo, score: number): Promise<void> {
-    this.log.debug(info, `Notify subscribers of score ${score} on ${info.source}`)
+  async notify (info: EventInfo, scores: Scores): Promise<void> {
+    this.log.debug(info, `Notify subscribers of scores ${JSON.stringify(scores)} on ${info.source}`)
 
     const text = `
 ## Biohazard Alert
 
-${this.sourceLink(info)} by ${this.authorLink(info)} was found
-with a toxicity of ${score}. Please investigate!
+${this.sourceLink(info)} by ${this.authorLink(info)} has scores that exceeded the designated
+threshold. Please investigate!
+
+${this.formatScores(scores)}
 
 Original text follows:
 
@@ -109,6 +113,16 @@ ${info.content}
 
   private authorLink (info: EventInfo): string {
     return `[${info.author}](https://github.com/${info.author})`
+  }
+
+  private formatScores (scores: Scores): string {
+    let text = ''
+
+    for (let attr in scores) {
+      text += `* **${attr}:** ${scores[attr]}\n`
+    }
+
+    return text
   }
 
   private toHtml (text: string): string {
