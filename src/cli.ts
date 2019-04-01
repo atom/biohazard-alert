@@ -47,7 +47,7 @@ export default class Cli {
         } else {
           const scores = this.getScores(response)
 
-          Object.keys(scores).sort().forEach(key => { console.log(`${key}: ${scores[key]}`)})
+          Object.keys(scores).sort().forEach(key => { console.log(`${key}: ${scores[key]}`) })
           console.log('')
         }
       })
@@ -94,11 +94,11 @@ export default class Cli {
   private async parseArguments (): Promise<[Options, EventInfo]> {
     const options =
       require('yargs')
-      .usage('Usage: $0 [options] url')
-      .boolean('verbose')
-      .alias('v', 'verbose')
-      .describe('v', 'Write out the full API response')
-      .argv
+        .usage('Usage: $0 [options] url')
+        .boolean('verbose')
+        .alias('v', 'verbose')
+        .describe('v', 'Write out the full API response')
+        .argv
 
     const info = await this.parseUri(options._)
 
