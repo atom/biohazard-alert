@@ -3,6 +3,9 @@ import * as request from 'request-promise-native'
 
 import InvalidEnvironmentError from './invalid-environment-error'
 
+type AllScores = {[s: string]: number[]}
+type Scores = {[s: string]: number}
+
 /**
  * Analyzes text for toxicity and other attributes.
  *
@@ -44,7 +47,7 @@ export default class Analyzer {
   }
 
   /**
-   * Analyzes the event in `info` and returns a toxicity value in the range `[0,1]`.
+   * Analyzes the event in `info` and returns a collection of scores for various sentiment models.
    *
    * If the text in `info.content` is [too long](https://github.com/atom/biohazard-alert/issues/1):
    *
@@ -52,15 +55,11 @@ export default class Analyzer {
    * 2. Each chunk is analyzed separately
    * 3. The highest score for a chunk is returned as the score for the event
    */
-  async analyze (info: EventInfo): Promise<number> {
-    const chunks = this.split(info.content)
-    const scores = await Promise.all(chunks.map(async chunk => {
-      return this.analyzeChunk(info, chunk)
-    }))
+  async analyze (info: EventInfo): Promise<Scores> {
+    const responses = await this.getAnalysis(info)
+    const allScores = this.extractScores(responses)
 
-    this.log.debug(scores, `Toxicity values for chunks of ${info.source}`)
-
-    return Math.max(...scores)
+    return this.maxScores(allScores)
   }
 
   /**
@@ -81,6 +80,23 @@ export default class Analyzer {
     const response = await this.getChunkAnalysis(info, chunk)
 
     return response.attributeScores.TOXICITY.summaryScore.value
+  }
+
+  private extractScores (responses: Perspective.Response[]): AllScores {
+    let scores: AllScores = {}
+
+    responses.forEach(response => {
+      const attrScores = response.attributeScores
+      for (let attr in attrScores) {
+        if (scores[attr]) {
+          scores[attr].push(attrScores[attr].summaryScore.value)
+        } else {
+          scores[attr] = [attrScores[attr].summaryScore.value]
+        }
+      }
+    })
+
+    return scores
   }
 
   /**
@@ -114,6 +130,16 @@ export default class Analyzer {
     this.log.debug(response, `Perspective API response for ${info.source}`)
 
     return response
+  }
+
+  private maxScores (allScores: AllScores): Scores {
+    let scores: Scores = {}
+
+    for (let attr in allScores) {
+      scores[attr] = Math.max(...allScores[attr])
+    }
+
+    return scores
   }
 
   /**
