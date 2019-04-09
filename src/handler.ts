@@ -143,7 +143,7 @@ export default class Handler {
   }
 
   private stripEmailReply (content: string): string {
-    const replyBlockPattern = /(^>.*$\n?)+/m
+    const replyBlockPattern = /(^.*<[^@]+@[^>]+>.*:$\n\n)?(^>.*$\n?)+/m
     const match = replyBlockPattern.exec(content)
 
     return match ? content.slice(0, match.index) : content
