@@ -118,8 +118,7 @@ export default class Analyzer {
           PROFANITY: {},
           THREAT: {},
           SEXUALLY_EXPLICIT: {},
-          FLIRTATION: {},
-          UNSUBSTANTIAL: {}
+          FLIRTATION: {}
         }
       },
       json: true
