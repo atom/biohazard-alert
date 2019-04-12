@@ -89,22 +89,6 @@ export default class Handler {
   }
 
   /**
-   * Strips an email reply block from the end of `content`.
-   *
-   * Returns everything but the email reply block.
-   */
-  stripEmailReply (content: string): string {
-    const replyBlockPattern = /(^>.*$\n)+/m
-    const match = replyBlockPattern.exec(content)
-
-    if (match && (match.index + match[0].length) === content.length) {
-      return content.slice(0, match.index)
-    } else {
-      return content
-    }
-  }
-
-  /**
    * Determines whether any of the `scores` are over the `threshold`.
    *
    * Returns only the scores that exceed the threshold or `null` if none of them did.
@@ -164,7 +148,7 @@ export default class Handler {
           isBot: context.isBot,
           isRepoPrivate: context.payload.repository.private,
           source: context.payload.comment.html_url,
-          content: this.stripEmailReply(context.payload.comment.body)
+          content: context.payload.comment.body
         }
 
       default: {
