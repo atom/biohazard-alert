@@ -3,13 +3,18 @@ import { Context, Logger } from 'probot' // eslint-disable-line no-unused-vars
 import Analyzer from './analyzer'
 import Notifier from './notifier'
 
+/**
+ * Configuration information.
+ */
 interface Config {
+  /** Flag indicating whether to ignore events from private repos. */
   skipPrivateRepos: boolean
+
+  /** Value over which to send a notification. Ranges from [0,1]. */
   threshold: number
 }
 
 type GetConfig = (context: Context, filename: string, defaults: Config) => Config
-type Scores = {[s: string]: number}
 
 const getConfig = require('probot-config') as GetConfig
 
@@ -83,6 +88,11 @@ export default class Handler {
     }
   }
 
+  /**
+   * Determines whether any of the `scores` are over the `threshold`.
+   *
+   * Returns only the scores that exceed the threshold or `null` if none of them did.
+   */
   private isOverThreshold (scores: Scores, threshold: number): Scores | null {
     let thresholdScores: Scores = {}
     let crossedThreshold = false
@@ -97,6 +107,11 @@ export default class Handler {
     return crossedThreshold ? thresholdScores : null
   }
 
+  /**
+   * Parses the important bits out of `context`.
+   *
+   * Returns an `EventInfo` structure or `null` if the event represented is not supported.
+   */
   private parseContext (context: Context): EventInfo | null {
     const fullEvent = `${context.event}.${context.payload.action}`
 
@@ -142,6 +157,11 @@ export default class Handler {
     }
   }
 
+  /**
+   * Strips an email reply block from the end of `content`.
+   *
+   * Returns everything but the email reply block.
+   */
   private stripEmailReply (content: string): string {
     const replyBlockPattern = /(^.*<[^@]+@[^>]+>.*:$\n\n)?(^>.*$\n?)+/m
     const match = replyBlockPattern.exec(content)

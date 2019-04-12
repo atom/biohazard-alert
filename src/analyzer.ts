@@ -3,8 +3,7 @@ import * as request from 'request-promise-native'
 
 import InvalidEnvironmentError from './invalid-environment-error'
 
-type AllScores = {[s: string]: number[]}
-type Scores = {[s: string]: number}
+type AllScores = {[modelName: string]: number[]}
 
 /**
  * Analyzes text for toxicity and other attributes.
