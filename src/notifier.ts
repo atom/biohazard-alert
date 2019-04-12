@@ -5,8 +5,6 @@ import stripIndent from 'strip-indent'
 
 import InvalidEnvironmentError from './invalid-environment-error'
 
-type Scores = {[s: string]: number}
-
 /**
  * Sends notifications via Sendgrid to the configured email addresses.
  *

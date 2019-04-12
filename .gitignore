@@ -3,3 +3,6 @@ node_modules/
 npm-debug.log
 debug.log
 .env
+
+# Ignore TypeScript incremental build files
+**/.tsbuildinfo

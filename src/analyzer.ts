@@ -3,8 +3,7 @@ import * as request from 'request-promise-native'
 
 import InvalidEnvironmentError from './invalid-environment-error'
 
-type AllScores = {[s: string]: number[]}
-type Scores = {[s: string]: number}
+type AllScores = {[modelName: string]: number[]}
 
 /**
  * Analyzes text for toxicity and other attributes.
@@ -56,6 +55,8 @@ export default class Analyzer {
    * 3. The highest score for a chunk is returned as the score for the event
    */
   async analyze (info: EventInfo): Promise<Scores> {
+    this.log.debug(info, 'Analyze event')
+
     const responses = await this.getAnalysis(info)
     const allScores = this.extractScores(responses)
 
