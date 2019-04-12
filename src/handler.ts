@@ -148,24 +148,12 @@ export default class Handler {
           isBot: context.isBot,
           isRepoPrivate: context.payload.repository.private,
           source: context.payload.comment.html_url,
-          content: this.stripEmailReply(context.payload.comment.body)
+          content: context.payload.comment.body
         }
 
       default: {
         return null
       }
     }
-  }
-
-  /**
-   * Strips an email reply block from the end of `content`.
-   *
-   * Returns everything but the email reply block.
-   */
-  private stripEmailReply (content: string): string {
-    const replyBlockPattern = /(^.*<[^@]+@[^>]+>.*:$\n\n)?(^>.*$\n?)+/m
-    const match = replyBlockPattern.exec(content)
-
-    return match ? content.slice(0, match.index) : content
   }
 }
