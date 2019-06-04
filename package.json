@@ -4,9 +4,9 @@
   "description": "Probot app to deliver notifications of toxic comments",
   "author": "Lee Dohm <atom@github.com> (https://github.com/atom/biohazard-alert)",
   "license": "MIT",
-  "repository": "https://github.com//biohazard-alert.git",
-  "homepage": "https://github.com//biohazard-alert",
-  "bugs": "https://github.com//biohazard-alert/issues",
+  "repository": "https://github.com/atom/biohazard-alert.git",
+  "homepage": "https://github.com/atom/biohazard-alert",
+  "bugs": "https://github.com/atom/biohazard-alert/issues",
   "keywords": [
     "probot",
     "github",
