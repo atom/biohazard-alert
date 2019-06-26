@@ -1,35 +1,36 @@
 /**
  * Types for Google's Perspective API.
  */
-namespace Perspective { // eslint-disable-line no-unused-vars
+namespace Perspective {
+  // eslint-disable-line no-unused-vars
   interface Attribute {
-    scoreType?: 'PROBABILITY'
-    scoreThreshold?: number
+    scoreType?: 'PROBABILITY';
+    scoreThreshold?: number;
   }
 
-  type AttributeMap = {[s: string]: Attribute}
+  type AttributeMap = { [s: string]: Attribute };
 
   interface AttributeScore {
-    spanScores: ReadonlyArray<SpanScore>
-    summaryScore: Score
+    spanScores: ReadonlyArray<SpanScore>;
+    summaryScore: Score;
   }
 
-  type AttributeScoreMap = {[s: string]: AttributeScore}
+  type AttributeScoreMap = { [s: string]: AttributeScore };
 
   interface Comment {
-    text: string
-    type?: 'HTML' | 'PLAIN_TEXT'
+    text: string;
+    type?: 'HTML' | 'PLAIN_TEXT';
   }
 
   interface Score {
-    type: string
-    value: number
+    type: string;
+    value: number;
   }
 
   interface SpanScore {
-    begin: number
-    end: number
-    score: Score
+    begin: number;
+    end: number;
+    score: Score;
   }
 
   /**
@@ -38,12 +39,12 @@ namespace Perspective { // eslint-disable-line no-unused-vars
    * See: https://github.com/conversationai/perspectiveapi/blob/master/api_reference.md#analyzecomment-request
    */
   export interface Request {
-    comment: Comment
-    requestedAttributes: AttributeMap
-    languages?: string[]
-    doNotStore?: boolean
-    clientToken?: string
-    sessionId?: string
+    comment: Comment;
+    requestedAttributes: AttributeMap;
+    languages?: string[];
+    doNotStore?: boolean;
+    clientToken?: string;
+    sessionId?: string;
   }
 
   /**
@@ -52,8 +53,8 @@ namespace Perspective { // eslint-disable-line no-unused-vars
    * See: https://github.com/conversationai/perspectiveapi/blob/master/api_reference.md#analyzecomment-response
    */
   export interface Response {
-    attributeScores: AttributeScoreMap
-    clientToken: string
-    languages: string[]
+    attributeScores: AttributeScoreMap;
+    clientToken: string;
+    languages: string[];
   }
 }
