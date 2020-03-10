@@ -1,9 +1,9 @@
-import * as CommonMark from 'commonmark'
-import { Logger } from 'probot' // eslint-disable-line no-unused-vars
-import mailer from '@sendgrid/mail'
-import stripIndent from 'strip-indent'
+import * as CommonMark from 'commonmark';
+import { Logger } from 'probot'; // eslint-disable-line no-unused-vars
+import mailer from '@sendgrid/mail';
+import stripIndent from 'strip-indent';
 
-import InvalidEnvironmentError from './invalid-environment-error'
+import InvalidEnvironmentError from './invalid-environment-error';
 
 /**
  * Sends notifications via Sendgrid to the configured email addresses.
@@ -16,56 +16,61 @@ import InvalidEnvironmentError from './invalid-environment-error'
  */
 export default class Notifier {
   /** Email address notifications will be sent from */
-  private fromEmail: string
+  private fromEmail: string;
 
   /** API key used to send emails */
-  private key: string
+  private key: string;
 
   /** Probot logger */
-  private log: Logger
+  private log: Logger;
 
   /** CommonMark reader used to parse Markdown */
-  private reader: CommonMark.Parser
+  private reader: CommonMark.Parser;
 
   /** Email address notifications will be sent to */
-  private toEmail: string
+  private toEmail: string;
 
   /** CommonMark writer used to render parsed Markdown into HTML */
-  private writer: CommonMark.HtmlRenderer
+  private writer: CommonMark.HtmlRenderer;
 
-  constructor (logger: Logger) {
+  constructor(logger: Logger) {
     if (!process.env.FROM_EMAIL) {
-      throw new InvalidEnvironmentError('FROM_EMAIL')
+      throw new InvalidEnvironmentError('FROM_EMAIL');
     }
 
     if (!process.env.NOTIFICATION_EMAIL) {
-      throw new InvalidEnvironmentError('NOTIFICATION_EMAIL')
+      throw new InvalidEnvironmentError('NOTIFICATION_EMAIL');
     }
 
     if (!process.env.SENDGRID_KEY) {
-      throw new InvalidEnvironmentError('SENDGRID_KEY')
+      throw new InvalidEnvironmentError('SENDGRID_KEY');
     }
 
-    this.fromEmail = process.env.FROM_EMAIL
-    this.key = process.env.SENDGRID_KEY
-    this.log = logger
-    this.reader = new CommonMark.Parser()
-    this.toEmail = process.env.NOTIFICATION_EMAIL
-    this.writer = new CommonMark.HtmlRenderer({ safe: true, smart: true })
+    this.fromEmail = process.env.FROM_EMAIL;
+    this.key = process.env.SENDGRID_KEY;
+    this.log = logger;
+    this.reader = new CommonMark.Parser();
+    this.toEmail = process.env.NOTIFICATION_EMAIL;
+    this.writer = new CommonMark.HtmlRenderer({ safe: true, smart: true });
 
-    mailer.setApiKey(this.key)
+    mailer.setApiKey(this.key);
   }
 
   /**
    * Sends a notification of the `score` ascribed to `info` to the notification email address.
    */
-  async notify (info: EventInfo, scores: Scores): Promise<void> {
-    this.log.debug(info, `Notify subscribers of scores ${JSON.stringify(scores)} on ${info.source}`)
+  async notify(info: EventInfo, scores: Scores): Promise<void> {
+    this.log.debug(
+      info,
+      `Notify subscribers of scores ${JSON.stringify(scores)} on ${info.source}`
+    );
 
     const text = `
 ## Biohazard Alert
 
-${this.sourceLink(info)} by ${this.authorLink(info)} has scores that exceeded the designated
+${this.sourceLink(info)} by ${this.authorLink(
+      info
+    )} has scores that exceeded the designated
 threshold. Please investigate!
 
 ${this.formatScores(scores)}
@@ -75,22 +80,28 @@ Original text follows:
 -----
 
 ${info.content}
-    `
+    `;
 
-    await this.sendMail(text)
+    await this.sendMail(text);
   }
 
   /**
    * Sends a notification of an `error` that occurred analyzing the event in `info` to the
    * notification email address.
    */
-  async notifyError (info: EventInfo, error: string, fullError: string): Promise<void> {
-    this.log.debug(info, `Notify subscribers of error on ${info.source}`)
+  async notifyError(
+    info: EventInfo,
+    error: string,
+    fullError: string
+  ): Promise<void> {
+    this.log.debug(info, `Notify subscribers of error on ${info.source}`);
 
     const text = `
 ## Biohazard Alert Analysis Error
 
-An error occurred when analyzing ${this.sourceLink(info)} by ${this.authorLink(info)}:
+An error occurred when analyzing ${this.sourceLink(info)} by ${this.authorLink(
+      info
+    )}:
 \`${error}\`
 
 Full error and original text follows:
@@ -104,33 +115,33 @@ ${fullError}
 -----
 
 ${info.content}
-    `
+    `;
 
-    await this.sendMail(text, 'Biohazard Alert: Error during analysis')
+    await this.sendMail(text, 'Biohazard Alert: Error during analysis');
   }
 
-  private authorLink (info: EventInfo): string {
-    return `[${info.author}](https://github.com/${info.author})`
+  private authorLink(info: EventInfo): string {
+    return `[${info.author}](https://github.com/${info.author})`;
   }
 
-  private formatScores (scores: Scores): string {
-    let text = ''
+  private formatScores(scores: Scores): string {
+    let text = '';
 
     for (let attr in scores) {
-      text += `* **${attr}:** ${scores[attr]}\n`
+      text += `* **${attr}:** ${scores[attr]}\n`;
     }
 
-    return text
+    return text;
   }
 
-  private toHtml (text: string): string {
-    const parsed = this.reader.parse(text)
+  private toHtml(text: string): string {
+    const parsed = this.reader.parse(text);
 
-    return this.writer.render(parsed)
+    return this.writer.render(parsed);
   }
 
-  private async sendMail (text: string, subject = 'Biohazard Alert!') {
-    const html = this.toHtml(stripIndent(text))
+  private async sendMail(text: string, subject = 'Biohazard Alert!') {
+    const html = this.toHtml(stripIndent(text));
 
     const msg = {
       to: this.toEmail,
@@ -143,25 +154,27 @@ ${info.content}
           enable: false
         }
       }
-    }
+    };
 
-    this.log.info(`Send notification from ${this.fromEmail} to ${this.toEmail}`)
-    await mailer.send(msg)
+    this.log.info(
+      `Send notification from ${this.fromEmail} to ${this.toEmail}`
+    );
+    await mailer.send(msg);
   }
 
-  private sourceLink (info: EventInfo): string {
+  private sourceLink(info: EventInfo): string {
     switch (info.event) {
       case 'commit_comment':
-        return `[A code comment](${info.source})`
+        return `[A code comment](${info.source})`;
 
       case 'issues':
-        return `[An issue](${info.source})`
+        return `[An issue](${info.source})`;
 
       case 'issue_comment':
-        return `[A comment](${info.source})`
+        return `[A comment](${info.source})`;
 
       default:
-        return info.source
+        return info.source;
     }
   }
 }
