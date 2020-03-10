@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@types/commonmark": "^0.27.3",
-    "@types/jest": "^24.0.0",
+    "@types/jest": "^25.1.4",
     "@types/nock": "^9.3.0",
     "@types/node": "^11.9.0",
     "@types/request": "^2.48.1",
@@ -46,12 +46,12 @@
     "@types/strip-indent": "^2.0.0",
     "@types/yargs": "^12.0.10",
     "eslint-plugin-typescript": "^0.14.0",
-    "jest": "^24.0.0",
+    "jest": "^25.1.0",
     "nodemon": "^1.17.2",
     "prettier": "1.18.2",
     "smee-client": "^1.0.2",
-    "ts-jest": "^24.0.0",
-    "typescript": "^3.3.1",
+    "ts-jest": "^25.2.1",
+    "typescript": "^3.8.3",
     "typescript-eslint-parser": "^22.0.0"
   },
   "engines": {
