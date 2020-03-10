@@ -7,6 +7,9 @@ import Notifier from './notifier';
  * Configuration information.
  */
 interface Config {
+  /** Flag indicating whether to notify when errors occur. */
+  notifyOnError: boolean;
+
   /** Flag indicating whether to ignore events from private repos. */
   skipPrivateRepos: boolean;
 
@@ -23,6 +26,7 @@ type GetConfig = (
 const getConfig = require('probot-config') as GetConfig;
 
 const defaults = {
+  notifyOnError: true,
   skipPrivateRepos: true,
   threshold: 0.8
 };
@@ -78,7 +82,9 @@ export default class Handler {
     try {
       scores = await this.analyzer.analyze(info);
     } catch (e) {
-      this.notifier.notifyError(info, e.error.error.message, e.message);
+      if (config.notifyOnError) {
+        this.notifier.notifyError(info, e.error.error.message, e.message);
+      }
 
       throw e;
     }
