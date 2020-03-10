@@ -15,6 +15,7 @@ This Probot app reads its configuration from two files:
 
 Configuration settings are:
 
+* `notifyOnError`: `true` means that notifications are generated when errors are encountered (**default** `true`)
 * `skipPrivateRepos`: `true` means that events from private repositories will be ignored (**default** `true`)
 * `threshold`: Analysis ratings higher than this number will generate notifications (**default** `0.8`)
 
