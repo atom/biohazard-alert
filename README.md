@@ -1,4 +1,5 @@
-# biohazard-alert
+##### Atom and all repositories under Atom will be archived on December 15, 2022. Learn more in our [official announcement](https://github.blog/2022-06-08-sunsetting-atom/)
+ # biohazard-alert
 
 > A GitHub App built with [Probot](https://github.com/probot/probot) to deliver notifications of toxic comments
 
